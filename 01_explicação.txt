@@ -1,0 +1,89 @@
+1. Objetivo do Projeto
+O objetivo deste projeto foi extrair informações sobre os empreendimentos da construtora, processar esses dados e organizá-los em um formato estruturado (como CSV) para facilitar a análise. Para isso, você utilizou web scraping, uma técnica para extrair dados de websites.
+
+2. Requisição HTTP
+A primeira etapa do projeto envolve obter os dados da página da web. Isso é feito utilizando o protocolo HTTP. O site da construtora usa um endpoint (API) para servir os dados dinamicamente, o que permite que esses dados sejam carregados de maneira eficiente.
+
+Conceitos-chave:
+HTTP Request (Requisição HTTP): É a solicitação que você faz para acessar os dados de um servidor. No seu caso, você fez uma requisição POST para a URL que serve os dados dos empreendimentos.
+Método POST: Diferente do método GET, o POST envia dados no corpo da requisição. No seu caso, enviamos parâmetros como filtros de busca, quantidade de dormitórios, região, etc., para obter os dados desejados.
+Cabeçalhos HTTP (Headers): São informações adicionais enviadas na requisição HTTP, como o User-Agent, que simula a navegação de um usuário em um navegador real. Os cabeçalhos ajudam a garantir que o servidor responda corretamente à sua solicitação.
+
+Código relevante:
+response = requests.post(api_url, headers=headers, data=payload)
+
+Aqui, você está enviando uma requisição POST para a API da construtora, passando os cabeçalhos e parâmetros necessários.
+
+3. Parsing do HTML
+Depois de obter a resposta da requisição (que contém o conteúdo da página HTML), a próxima etapa é processar esse HTML e extrair os dados relevantes. Para isso, utilizamos a biblioteca BeautifulSoup.
+
+Conceitos-chave:
+HTML: É a linguagem usada para estruturar as páginas web. O HTML contém tags (como <div>, <h2>, <p>, etc.) que organizam o conteúdo visual e os dados.
+Parsing do HTML: O processo de analisar o HTML e encontrar os elementos específicos que contêm os dados que você deseja extrair. O BeautifulSoup facilita essa tarefa ao transformar o HTML em uma estrutura de árvore, permitindo navegar pelos elementos facilmente.
+
+Código relevante:
+soup = BeautifulSoup(content, 'html.parser')
+
+Aqui, estamos usando o BeautifulSoup para transformar o conteúdo HTML em uma estrutura que podemos navegar e buscar os dados desejados.
+
+4. Extração de Dados
+Com o HTML já estruturado, você agora precisa identificar e extrair as informações que interessam, como o nome do empreendimento, endereço, número de dormitórios e status da obra. Utilizamos os métodos find e find_all para localizar os elementos HTML que contêm essas informações.
+
+Conceitos-chave:
+find/find_all: São métodos do BeautifulSoup que permitem buscar elementos HTML com base em tags, classes, ou outros atributos. No seu caso, você usou find_all para capturar todos os blocos de empreendimentos.
+Navegação pela árvore DOM: O DOM (Document Object Model) é a representação hierárquica de um documento HTML. Utilizando BeautifulSoup, você navega pela árvore para buscar os elementos certos.
+
+Código relevante:
+blocos = soup.find_all('div', class_='mac__enterprises-items--item')
+for bloco in blocos:
+    nome = bloco.find('h2', class_='mac__enterprises-name').get_text(strip=True)
+    endereco = bloco.find('p', class_='mac__enterprises-text').get_text(strip=True)
+
+Aqui, estamos encontrando todos os elementos que contêm as informações de empreendimentos, extraindo nome, endereço, dormitórios e status da obra.
+
+5. Organização dos Dados
+Após a extração, os dados são armazenados em listas, e posteriormente organizados em um DataFrame usando a biblioteca pandas.
+
+Conceitos-chave:
+DataFrame: É uma estrutura de dados bidimensional (tabela) usada no pandas, semelhante a uma planilha ou a uma tabela de banco de dados. Facilita a manipulação, análise e exportação dos dados.
+pandas: É uma biblioteca do Python amplamente utilizada para análise de dados. Permite trabalhar com grandes volumes de dados de forma eficiente.
+
+Código relevante:
+df = pd.DataFrame({
+    'Empreendimento': empreendimentos,
+    'Endereço': enderecos,
+    'Dormitórios': dormitorios,
+    'Status da Obra': status_obra
+})
+
+Aqui, você cria um DataFrame com as listas que contêm os dados extraídos.
+
+6. Exportação dos Dados
+Uma vez que os dados estão organizados no DataFrame, a próxima etapa é exportar esses dados para formatos que possam ser usados fora do Python, como arquivos CSV ou Excel.
+
+Conceitos-chave:
+CSV (Comma Separated Values): É um formato de arquivo simples para armazenar dados tabulares. Cada linha é um registro e cada coluna é separada por vírgulas.
+Excel: O formato de planilhas da Microsoft que permite armazenar e manipular dados de maneira visual e organizada.
+
+Código relevante:
+df.to_csv('empreendimentos.csv', index=False)
+
+Aqui, você exporta o DataFrame para arquivos CSV e Excel, prontos para uso.
+
+7. Validação dos Dados
+Por fim, o código imprime os dados extraídos no console, permitindo que você valide se os dados foram corretamente extraídos e estruturados antes da exportação.
+
+Código relevante:
+print(df)
+
+Conceitos Importantes:
+Web Scraping: O processo automatizado de extração de dados da web. Utilizamos requests para obter os dados e BeautifulSoup para processá-los.
+HTTP e APIs: O uso de requisições POST para interagir com um endpoint que serve os dados.
+pandas: Uma biblioteca poderosa para manipulação e análise de dados.
+Exportação de Dados: A exportação de dados para CSV ou Excel é uma etapa importante para garantir que os dados possam ser analisados fora do ambiente de desenvolvimento.
+Etapas do Projeto:
+Requisição HTTP: Enviar uma requisição POST para a API do site da construtora e obter o HTML de resposta.
+Parsing do HTML: Usar BeautifulSoup para transformar o HTML em uma estrutura que possa ser navegada e analisada.
+Extração de Dados: Encontrar os elementos de interesse (empreendimentos) e extrair suas informações.
+Organização com pandas: Organizar os dados extraídos em um DataFrame para facilitar a manipulação.
+Exportação de Dados: Salvar os dados em formatos CSV e Excel para análise posterior.
